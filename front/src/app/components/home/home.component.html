@@ -1,0 +1,25 @@
+<div class="home-root">
+  <h1>Witaj</h1>
+
+  <div *ngIf="!currentUser()">
+    <p>Brak zalogowanego użytkownika (currentUser = null)</p>
+    <button (click)="openChangePassword()">Zmień hasło</button>
+    <button (click)="logout()">Wyloguj</button>
+  </div>
+
+  <div *ngIf="currentUser() as u">
+    <p>
+      <strong>{{ u.login }}</strong> — {{ u.name }}
+    </p>
+
+    <div class="actions">
+      <button (click)="openChangePassword()">Change Password</button>
+      <button (click)="logout()">Wyloguj</button>
+    </div>
+
+    <div class="admin-area" *ngIf="u.isAdmin">
+      <h2>Panel administracyjny</h2>
+      <app-admin-panel></app-admin-panel>
+    </div>
+  </div>
+</div>

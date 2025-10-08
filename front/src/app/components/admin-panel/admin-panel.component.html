@@ -1,0 +1,54 @@
+<div class="admin-panel">
+  <div class="toolbar">
+    <button (click)="openCreate()">Dodaj nowego użytkownika</button>
+  </div>
+
+  <div *ngIf="loading()">Ładowanie...</div>
+
+  <table class="users-table" *ngIf="users().length > 0">
+    <thead>
+      <tr>
+        <th>Login</th>
+        <th>Imię</th>
+        <th>Admin</th>
+        <th>Zablokowany</th>
+        <th>Wym. zasady</th>
+        <th>Pass valid to</th>
+        <th>Akcje</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let u of users()">
+        <td>{{ u.login }}</td>
+        <td>{{ u.name }}</td>
+        <td>{{ u.isAdmin ? "✔" : "" }}</td>
+        <td>
+          <button (click)="toggleBlock(u)">
+            {{ u.isBlocked ? "Odblokuj" : "Zablokuj" }}
+          </button>
+        </td>
+        <td>
+          <button (click)="toggleRequireRules(u)">
+            {{ u.requirePasswordRules ? "Wyłącz" : "Włącz" }}
+          </button>
+        </td>
+        <td>
+          <input
+            type="date"
+            [value]="
+              u.passwordValidTo ? (u.passwordValidTo | date : 'yyyy-MM-dd') : ''
+            "
+            (change)="setPasswordValidTo(u, $any($event.target).value)"
+          />
+        </td>
+        <td class="actions">
+          <button (click)="openEdit(u)">Edytuj</button>
+          <button (click)="openSetPassword(u.id)">Ustaw hasło</button>
+          <button (click)="deleteUser(u)">Usuń</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="users().length === 0 && !loading()">Brak użytkowników</div>
+</div>

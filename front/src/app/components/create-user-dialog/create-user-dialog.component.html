@@ -1,0 +1,61 @@
+<h3 mat-dialog-title>Nowy użytkownik</h3>
+
+<div class="dialog-content" mat-dialog-content>
+  <div class="form-row">
+    <label>Login</label>
+    <input [ngModel]="login()" (ngModelChange)="login.set($event)" />
+  </div>
+
+  <div class="form-row">
+    <label>Hasło</label>
+    <input
+      type="password"
+      [ngModel]="password()"
+      (ngModelChange)="password.set($event)"
+    />
+  </div>
+
+  <div class="form-row">
+    <label>Imię</label>
+    <input [ngModel]="name()" (ngModelChange)="name.set($event)" />
+  </div>
+
+  <div class="form-row">
+    <label
+      ><input
+        type="checkbox"
+        [ngModel]="isAdmin()"
+        (ngModelChange)="isAdmin.set($event)"
+      />
+      Admin</label
+    >
+  </div>
+
+  <div class="form-row">
+    <label
+      ><input
+        type="checkbox"
+        [ngModel]="requirePasswordRules()"
+        (ngModelChange)="requirePasswordRules.set($event)"
+      />
+      Wymagaj reguł hasła</label
+    >
+  </div>
+
+  <div class="form-row">
+    <label>Ważność hasła</label>
+    <input
+      type="date"
+      [ngModel]="passwordValidTo()"
+      (ngModelChange)="passwordValidTo.set($event)"
+    />
+  </div>
+
+  <div *ngIf="error()" class="error">{{ error() }}</div>
+</div>
+<div class="actions" mat-dialog-actions>
+  <button (click)="cancel()">Anuluj</button>
+  <button (click)="create()" [disabled]="loading()">
+    {{ loading() ? "Tworzę..." : "Utwórz" }}
+  </button>
+</div>

@@ -1,0 +1,9 @@
+.home-root {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 16px;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+
+  .actions { display: flex; gap: 8px; margin-bottom: 12px; }
+  .admin-area { margin-top: 20px; }
+}
