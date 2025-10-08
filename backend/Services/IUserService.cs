@@ -15,5 +15,6 @@ namespace backend.Services
         /// Set requiresExpiredPassword = true for user's update, requiresExpiredPassword = false for admin's update
         /// </summary>
         Task<bool> SetNewPasswordAsync(Guid id, string newPassword, bool requiresExpiredPassword = true);
+        Task<User?> Login(LoginDto dto);
     }
 }

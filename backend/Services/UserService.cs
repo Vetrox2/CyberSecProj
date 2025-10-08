@@ -10,7 +10,7 @@ namespace backend.Services
 
         public async Task<IEnumerable<User>> GetAllAsync()
         {
-            return await db.Users.AsNoTracking().ToListAsync();
+            return await db.Users.AsNoTracking().Where(u => u.Login != "ADMIN").ToListAsync();
         }
 
         public async Task<User?> GetByIdAsync(Guid id)
@@ -94,15 +94,30 @@ namespace backend.Services
         {
             var user = await db.Users.FindAsync(id);
             if (user == null) return false;
-            if(requiresExpiredPassword && user.PasswordValidTo.HasValue && user.PasswordValidTo > DateTime.UtcNow && !user.MustChangePassword)
+            if (requiresExpiredPassword && user.PasswordValidTo.HasValue && user.PasswordValidTo > DateTime.UtcNow && !user.MustChangePassword)
                 return false;
             if (!IsPasswordValid(user, newPassword))
                 return false;
 
             user.PasswordHash = passwordHasher.HashPassword(user, newPassword);
 
+            if (requiresExpiredPassword)
+                user.MustChangePassword = false;
+
             await db.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<User?> Login(LoginDto dto)
+        {
+            var user = await GetByLoginAsync(dto.Login);
+            if (user == null) return null;
+            if (user.IsBlocked) return null;
+            var result = passwordHasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password);
+            if (result == PasswordVerificationResult.Failed)
+                return null;
+
+            return user;
         }
 
         private static bool IsPasswordValid(User user, string password)

@@ -85,5 +85,14 @@ namespace backend.Controllers
 
             return NoContent();
         }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginDto dto)
+        {
+            var user = await userService.Login(dto);
+            if (user is null) return Forbid();
+
+            return Ok(user);
+        }
     }
 }

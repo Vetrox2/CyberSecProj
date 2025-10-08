@@ -34,7 +34,7 @@ namespace backend.Models
     public class UpdateUserDto
     {
         [MaxLength(200)]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         public bool? IsBlocked { get; set; }
 
@@ -58,5 +58,11 @@ namespace backend.Models
     {
         [Required]
         public string NewPassword { get; set; }
+    }
+
+    public class LoginDto
+    {
+        public string Login { get; set; }
+        public string Password { get; set; }
     }
 }
