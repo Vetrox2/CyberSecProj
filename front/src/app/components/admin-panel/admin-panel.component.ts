@@ -66,6 +66,11 @@ export class AdminPanelComponent implements OnInit {
     ref.afterClosed().subscribe();
   }
 
+  async generateOtp(userLogin: string) {
+    const otp = await this.userService.generateOneTimePassword(userLogin);
+    alert(`Wygenerowane OTP dla ${userLogin}: ${otp}`);
+  }
+
   async toggleBlock(u: UserDto) {
     const dto: UpdateUserDto = { isBlocked: !u.isBlocked };
     await this.userService.update(u.id, dto);

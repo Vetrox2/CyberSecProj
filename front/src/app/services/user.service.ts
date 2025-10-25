@@ -97,4 +97,10 @@ export class UserService {
     this._currentUser.set(null);
     this.router.navigate(['']);
   }
+
+  async generateOneTimePassword(userLogin: string): Promise<number> {
+    return await firstValueFrom(
+      this.http.post<number>(`${this.baseUrl}/otp/${userLogin}`, {})
+    );
+  }
 }

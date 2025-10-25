@@ -3,10 +3,16 @@
 <div class="dialog-content" mat-dialog-content>
   <div class="form-row">
     <label>Login</label>
-    <input [ngModel]="login()" (ngModelChange)="login.set($event)" />
+    <input [ngModel]="login()" (ngModelChange)="onLoginChange($event)" />
   </div>
 
   <div class="form-row">
+    <button (click)="generateOtp()">Generuj OTP</button>
+    <span *ngIf="otp()">Wygenerowane OTP: {{ otp() }}</span>
+    <button *ngIf="otp()" (click)="otp.set('')">Usuń OTP</button>
+  </div>
+
+  <div *ngIf="!otp()" class="form-row">
     <label>Hasło</label>
     <input
       type="password"

@@ -91,6 +91,7 @@ namespace backend.Filters
                 ("POST", "SetPasswordByAdmin") => AuditActionType.UserPasswordSetByAdmin,
                 ("POST", "SetPasswordByUser") => AuditActionType.UserPasswordSetByUser,
                 ("POST", "Login") => AuditActionType.UserLogin,
+                ("POST", "GenerateOneTimePassword") => AuditActionType.GenerateOneTimePassword,
                 _ => null
             };
     }

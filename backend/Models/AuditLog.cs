@@ -21,20 +21,21 @@ namespace backend.Models
     public static class AuditActionType
     {
         // Authentication
-        public const string UserLogin = "UserLogin";
+        public const string UserLogin = "User Login";
 
         // User Management
-        public const string UserCreate = "UserCreate";
-        public const string UserEdit = "UserEdit";
-        public const string UserDelete = "UserDelete";
+        public const string UserCreate = "User Created";
+        public const string UserEdit = "User Edited";
+        public const string UserDelete = "User Deleted";
 
         // Password Operations
-        public const string UserPasswordChange = "UserPasswordChange";
-        public const string UserPasswordSetByAdmin = "UserPasswordSetByAdmin";
-        public const string UserPasswordSetByUser = "UserPasswordSetByUser";
+        public const string UserPasswordChange = "Password Changed";
+        public const string UserPasswordSetByAdmin = "Password Set by Admin";
+        public const string UserPasswordSetByUser = "Password Set by User";
+        public const string GenerateOneTimePassword = "One-Time Password Generated";
 
         // User Queries
-        public const string UserGetAll = "UserGetAll";
-        public const string UserGetById = "UserGetById";
+        public const string UserGetAll = "All Users Retrieved";
+        public const string UserGetById = "User Details Retrieved";
     }
 }

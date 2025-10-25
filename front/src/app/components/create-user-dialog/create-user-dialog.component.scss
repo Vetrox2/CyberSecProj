@@ -1,3 +1,18 @@
-.form-row { margin-bottom: 10px; display:flex; flex-direction:column; }
-.actions { display:flex; gap:8px; justify-content:flex-end; margin-top:12px; }
-.error { color: #c62828; margin-top:6px; }
+.form-row {
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 12px;
+}
+
+.error {
+    color: #c62828;
+    margin-top: 6px;
+}

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services
 {
-    public class UserService(AppDbContext db) : IUserService
+    public class UserService(AppDbContext db, IOneTimePasswordService otpService) : IUserService
     {
         private readonly PasswordHasher<User> passwordHasher = new();
 
@@ -75,7 +75,7 @@ namespace backend.Services
         {
             var user = await db.Users.FindAsync(id);
             if (user == null) return false;
-            if (!IsPasswordValid(user, changePasswordDto.NewPassword))
+            if (!IsNewPasswordValid(user, changePasswordDto.NewPassword))
                 return false;
             var result = passwordHasher.VerifyHashedPassword(user, user.PasswordHash, changePasswordDto.CurrentPassword);
             if (result == PasswordVerificationResult.Failed)
@@ -96,7 +96,7 @@ namespace backend.Services
             if (user == null) return false;
             if (requiresExpiredPassword && user.PasswordValidTo.HasValue && user.PasswordValidTo > DateTime.UtcNow && !user.MustChangePassword)
                 return false;
-            if (!IsPasswordValid(user, newPassword))
+            if (!IsNewPasswordValid(user, newPassword))
                 return false;
 
             user.PasswordHash = passwordHasher.HashPassword(user, newPassword);
@@ -113,14 +113,22 @@ namespace backend.Services
             var user = await GetByLoginAsync(dto.Login);
             if (user == null) return null;
             if (user.IsBlocked) return null;
-            var result = passwordHasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password);
-            if (result == PasswordVerificationResult.Failed)
-                return null;
 
-            return user;
+            var result = passwordHasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password);
+            if (result != PasswordVerificationResult.Failed)
+            {
+                return user;
+            }
+
+            if (double.TryParse(dto.Password, out var otpValue) && await otpService.VerifyOneTimePasswordAsync(user, otpValue))
+            {
+                return user;
+            }
+
+            return null;
         }
 
-        private static bool IsPasswordValid(User user, string password)
+        private static bool IsNewPasswordValid(User user, string password)
             => !user.RequirePasswordRules || VerifyPasswordRules(password);
 
         private static bool VerifyPasswordRules(string password)

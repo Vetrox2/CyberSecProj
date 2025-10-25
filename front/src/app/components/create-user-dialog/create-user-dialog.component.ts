@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { UserService } from '../../services/user.service';
+import { firstValueFrom, range } from 'rxjs';
 
 @Component({
   selector: 'app-create-user-dialog',
@@ -16,6 +17,7 @@ export class CreateUserDialogComponent {
   private dialogRef = inject(MatDialogRef<CreateUserDialogComponent>);
 
   login = signal('');
+  otp = signal('');
   password = signal('');
   name = signal('');
   isAdmin = signal(false);
@@ -26,6 +28,10 @@ export class CreateUserDialogComponent {
 
   async create() {
     this.error.set(null);
+    if (this.otp()) {
+      const random = Math.random().toString(36).slice(2, 10);
+      this.password.set(random.toString());
+    }
     if (!this.login().trim() || !this.password().trim()) {
       this.error.set('Login i hasło są wymagane');
       return;
@@ -46,6 +52,16 @@ export class CreateUserDialogComponent {
     } finally {
       this.loading.set(false);
     }
+  }
+
+  onLoginChange(newLogin: string) {
+    this.login.set(newLogin);
+    this.otp.set('');
+  }
+
+  async generateOtp() {
+    const otp = await this.userService.generateOneTimePassword(this.login());
+    this.otp.set(otp.toString());
   }
 
   cancel() {

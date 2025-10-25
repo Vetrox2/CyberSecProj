@@ -7,7 +7,7 @@ namespace backend.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class UsersController(IUserService userService) : ControllerBase
+    public class UsersController(IUserService userService, IOneTimePasswordService otpService) : ControllerBase
     {
         [HttpGet]
         public async Task<IActionResult> GetAll()
@@ -93,6 +93,20 @@ namespace backend.Controllers
             if (user is null) return Forbid();
 
             return Ok(user);
+        }
+
+        [HttpPost("otp/{userLogin}")]
+        public async Task<IActionResult> GenerateOneTimePassword([FromRoute] string userLogin)
+        {
+            try
+            {
+                var otp = await otpService.GenerateOneTimePasswordAsync(userLogin);
+                return Ok(otp);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
         }
     }
 }
