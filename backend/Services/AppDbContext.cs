@@ -11,6 +11,7 @@ namespace backend.Services
         }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<AuditLog> AuditLogs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -28,6 +29,15 @@ namespace backend.Services
             builder.Entity<User>()
                 .Property(u => u.PasswordHash)
                 .IsRequired();
+
+            builder.Entity<AuditLog>()
+                .HasIndex(a => a.UserId);
+
+            builder.Entity<AuditLog>()
+                .HasIndex(a => a.Date);
+
+            builder.Entity<AuditLog>()
+                .HasIndex(a => a.ActionType);
         }
     }
 }

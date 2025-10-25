@@ -1,15 +1,23 @@
+using backend.Filters;
 using backend.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    // AuthenticationFilter must run BEFORE AuditActionFilter
+    // It extracts user ID from header and sets HttpContext.User
+    options.Filters.Add<AuthenticationFilter>();
+    options.Filters.Add<AuditActionFilter>();
+});
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 //options.UseSqlServer(builder.Configuration.GetConnectionString("Laptop")));
 
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAuditLogService, AuditLogService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
