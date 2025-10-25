@@ -1,6 +1,7 @@
 <div class="admin-panel">
   <div class="toolbar">
     <button (click)="openCreate()">Dodaj nowego użytkownika</button>
+    <button (click)="openLogs()">Zobacz logi</button>
   </div>
 
   <div *ngIf="loading()">Ładowanie...</div>
@@ -45,6 +46,7 @@
           <button (click)="openEdit(u)">Edytuj</button>
           <button (click)="openSetPassword(u.id)">Ustaw hasło</button>
           <button (click)="deleteUser(u)">Usuń</button>
+          <button (click)="openLogs(u.id)">Logi</button>
         </td>
       </tr>
     </tbody>

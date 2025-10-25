@@ -7,6 +7,7 @@ import { EditUserDialogComponent } from '../edit-user-dialog/edit-user-dialog.co
 import { UpdateUserDto, UserDto } from '../../models/user.model';
 import { CreateUserDialogComponent } from '../create-user-dialog/create-user-dialog.component';
 import { SetPasswordDialogComponent } from '../set-password-dialog/set-password-dialog.component';
+import { ViewLogsDialogComponent } from '../view-logs-dialog/view-logs-dialog.component';
 
 @Component({
   selector: 'app-admin-panel',
@@ -37,6 +38,15 @@ export class AdminPanelComponent implements OnInit {
       if (res === true) {
         // created — list already updated in service
       }
+    });
+  }
+
+  openLogs(userId?: string) {
+    this.dialog.open(ViewLogsDialogComponent, {
+      width: '1200px',
+      maxWidth: '90vw',
+      height: '80vh',
+      data: { userId },
     });
   }
 

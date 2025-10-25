@@ -1,0 +1,24 @@
+<h3 mat-dialog-title>Logi</h3>
+<div class="dialog-content" mat-dialog-content>
+  <div *ngIf="loading">Ładowanie...</div>
+  <table class="logs-table" *ngIf="!loading && logs.length > 0">
+    <thead>
+      <tr>
+        <th>Data/Czas</th>
+        <th>Użytkownik</th>
+        <th>Akcja</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let log of logs">
+        <td>{{ log.timestamp | date : "yyyy-MM-dd HH:mm:ss" }}</td>
+        <td>{{ log.userLogin }}</td>
+        <td>{{ log.action }}</td>
+        <td>{{ log.success ? "Sukces" : "Niepowodzenie" }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="!loading && logs.length === 0">Brak logów do wyświetlenia</div>
+</div>

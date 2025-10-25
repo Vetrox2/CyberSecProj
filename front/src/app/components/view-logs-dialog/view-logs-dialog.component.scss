@@ -1,0 +1,29 @@
+.logs-table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th,
+    td {
+        border: 1px solid #e6e6e6;
+        padding: 8px;
+        text-align: left;
+    }
+
+    th {
+        background: #fafafa;
+    }
+
+    .actions {
+        display: flex;
+        gap: 6px;
+    }
+
+    input[type="date"] {
+        padding: 4px;
+        border-radius: 6px;
+    }
+}
+
+.dialog-content {
+    padding-bottom: 16px;
+}

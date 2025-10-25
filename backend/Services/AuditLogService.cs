@@ -20,18 +20,38 @@ namespace backend.Services
             await db.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<AuditLog>> GetAllLogsAsync()
+        public async Task<IEnumerable<LogDto>> GetAllLogsAsync()
         {
             return await db.AuditLogs
-                .OrderByDescending(log => log.Date)
+                .Join(db.Users,
+                    log => log.UserId,
+                    user => user.Id,
+                    (log, user) => new LogDto
+                    {
+                        UserLogin = user.Login,
+                        Timestamp = log.Date.ToString(),
+                        Action = log.ActionType,
+                        Success = log.SuccessState
+                    })
+                .OrderByDescending(dto => dto.Timestamp)
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<AuditLog>> GetLogsByUserIdAsync(Guid userId)
+        public async Task<IEnumerable<LogDto>> GetLogsByUserIdAsync(Guid userId)
         {
             return await db.AuditLogs
                 .Where(log => log.UserId == userId)
-                .OrderByDescending(log => log.Date)
+                .Join(db.Users,
+                    log => log.UserId,
+                    user => user.Id,
+                    (log, user) => new LogDto
+                    {
+                        UserLogin = user.Login,
+                        Timestamp = log.Date.ToString(),
+                        Action = log.ActionType,
+                        Success = log.SuccessState
+                    })
+                .OrderByDescending(dto => dto.Timestamp)
                 .ToListAsync();
         }
     }
