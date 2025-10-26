@@ -26,4 +26,11 @@
   <button (click)="onLogin()">Zaloguj</button>
 
   <p class="error" *ngIf="error()">{{ error() }}</p>
+
+  <div class="lockout-timer" *ngIf="lockoutService.isLocked() && lockoutService.remainingSeconds() > 0">
+    <p class="timer-text">
+      ⏱️ Logowanie zablokowane. Odblokowanie za: 
+      <strong>{{ lockoutService.formatTime(lockoutService.remainingSeconds()) }}</strong>
+    </p>
+  </div>
 </div>

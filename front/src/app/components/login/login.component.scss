@@ -58,4 +58,36 @@
     color: #e53935;
     font-size: 0.9rem;
   }
+
+  .lockout-timer {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    border-radius: 8px;
+    background: #fff3e0;
+    border: 1px solid #ffb74d;
+    animation: pulse 2s ease-in-out infinite;
+
+    .timer-text {
+      margin: 0;
+      color: #e65100;
+      font-size: 0.95rem;
+      line-height: 1.5;
+
+      strong {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #d84315;
+        font-family: 'Courier New', monospace;
+      }
+    }
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      border-color: #ffb74d;
+    }
+    50% {
+      border-color: #ff9800;
+    }
+  }
 }

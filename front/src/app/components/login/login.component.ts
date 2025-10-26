@@ -1,9 +1,10 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UserService } from '../../services/user.service';
 import { UserDto } from '../../models/user.model';
+import { LoginLockoutService } from '../../services/login-lockout.service';
 
 @Component({
   selector: 'app-login',
@@ -12,20 +13,34 @@ import { UserDto } from '../../models/user.model';
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   login = signal('');
   password = signal('');
   error = signal('');
 
+  lockoutService = inject(LoginLockoutService);
+
   constructor(private userService: UserService, private router: Router) {}
+
+  ngOnInit() {
+    this.lockoutService.checkLockoutStatus();
+  }
 
   async onLogin() {
     this.error.set('');
+
+    if (this.lockoutService.isLocked()) {
+      this.setErrorOnLockout();
+      return;
+    }
+
     try {
       const user = await this.userService.login({
         login: this.login(),
         password: this.password(),
       });
+
+      this.lockoutService.clearLockout();
 
       if (user.mustChangePassword || this.isPasswordExpired(user)) {
         this.router.navigate(['/set-password']);
@@ -34,7 +49,14 @@ export class LoginComponent {
       }
     } catch (err: any) {
       console.error('Login failed', err);
-      this.error.set('Login lub hasło niepoprawne');
+
+      this.lockoutService.recordFailedAttempt();
+
+      if (this.lockoutService.isLocked()) {
+        this.setErrorOnLockout();
+      } else {
+        this.error.set('Login lub hasło niepoprawne');
+      }
     }
   }
 
@@ -45,5 +67,11 @@ export class LoginComponent {
     const now = new Date();
 
     return expiry.getTime() < now.getTime();
+  }
+
+  private setErrorOnLockout() {
+    const remaining = this.lockoutService.remainingSeconds();
+    const formatted = this.lockoutService.formatTime(remaining);
+    this.error.set(`Logowanie zablokowane. Spróbuj ponownie za ${formatted}`);
   }
 }
