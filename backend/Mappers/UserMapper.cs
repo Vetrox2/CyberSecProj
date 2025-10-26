@@ -13,9 +13,9 @@ namespace backend.Mappers
                 Name = user.Name,
                 MustChangePassword = user.MustChangePassword,
                 IsBlocked = user.IsBlocked,
-                IsAdmin = user.IsAdmin,
                 PasswordValidTo = user.PasswordValidTo,
-                RequirePasswordRules = user.RequirePasswordRules
+                RequirePasswordRules = user.RequirePasswordRules,
+                RoleId = user.RoleId,
             };
         }
     }

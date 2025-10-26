@@ -32,13 +32,12 @@ namespace backend.Services
             {
                 Login = dto.Login,
                 Name = dto.Name,
-                IsAdmin = dto.IsAdmin,
+                RoleId = dto.RoleId ?? 1,
                 RequirePasswordRules = dto.RequirePasswordRules,
                 PasswordValidTo = dto.PasswordValidTo
             };
 
             user.PasswordHash = passwordHasher.HashPassword(user, dto.Password);
-
 
             db.Users.Add(user);
             await db.SaveChangesAsync();
@@ -53,7 +52,7 @@ namespace backend.Services
 
             if (dto.Name != null) user.Name = dto.Name;
             if (dto.IsBlocked.HasValue) user.IsBlocked = dto.IsBlocked.Value;
-            if (dto.IsAdmin.HasValue) user.IsAdmin = dto.IsAdmin.Value;
+            if (dto.RoleId.HasValue) user.RoleId = dto.RoleId.Value;
             if (dto.RequirePasswordRules.HasValue) user.RequirePasswordRules = dto.RequirePasswordRules.Value;
             if (dto.PasswordValidTo.HasValue) user.PasswordValidTo = dto.PasswordValidTo;
 

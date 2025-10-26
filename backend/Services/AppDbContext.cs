@@ -14,6 +14,7 @@ namespace backend.Services
         public DbSet<AuditLog> AuditLogs { get; set; }
         public DbSet<OneTimePassword> OneTimePasswords { get; set; }
         public DbSet<AppSettings> AppSettings { get; set; }
+        public DbSet<Role> Roles { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -46,6 +47,16 @@ namespace backend.Services
 
             builder.Entity<OneTimePassword>()
                 .HasIndex(otp => new { otp.UserLogin, otp.Active });
+
+            builder.Entity<Role>()
+                .HasIndex(r => r.Name)
+                .IsUnique();
+
+            builder.Entity<Role>().HasData(
+                new Role { Id = 1, Name = "User" },
+                new Role { Id = 2, Name = "Moderator" },
+                new Role { Id = 3, Name = "Admin" }
+            );
 
             builder.Entity<AppSettings>().HasData(new AppSettings
             {

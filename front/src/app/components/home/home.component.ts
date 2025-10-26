@@ -1,10 +1,11 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { UserService } from '../../services/user.service';
 import { ChangePasswordDialogComponent } from '../change-password-dialog/change-password-dialog.component';
 import { AdminPanelComponent } from '../admin-panel/admin-panel.component';
+import { RoleService } from '../../services/role.service';
 
 @Component({
   selector: 'app-home',
@@ -13,10 +14,11 @@ import { AdminPanelComponent } from '../admin-panel/admin-panel.component';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
   private userService = inject(UserService);
   private router = inject(Router);
   private dialog = inject(MatDialog);
+  private roleService = inject(RoleService);
 
   // currentUser comes from service computed, but for now you said you'll supply it;
   // we will read from service.currentUser computed.
@@ -24,6 +26,10 @@ export class HomeComponent {
 
   // helper local signal for loading state
   loading = signal(false);
+
+  async ngOnInit() {
+    await this.roleService.loadAll();
+  }
 
   openChangePassword() {
     this.dialog

@@ -1,4 +1,4 @@
-import { Component, inject, Signal, signal } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -7,6 +7,7 @@ import {
   MatDialogModule,
 } from '@angular/material/dialog';
 import { UserService } from '../../services/user.service';
+import { RoleService } from '../../services/role.service';
 import { UserDto } from '../../models/user.model';
 
 @Component({
@@ -16,21 +17,24 @@ import { UserDto } from '../../models/user.model';
   templateUrl: './edit-user-dialog.component.html',
   styleUrls: ['./edit-user-dialog.component.scss'],
 })
-export class EditUserDialogComponent {
+export class EditUserDialogComponent implements OnInit {
   private userService = inject(UserService);
+  private roleService = inject(RoleService);
   private dialogRef = inject(MatDialogRef<EditUserDialogComponent>);
   private data = inject(MAT_DIALOG_DATA) as { user: UserDto };
+
+  roles = this.roleService.roles();
 
   loading = signal(true);
   error = signal<string | null>(null);
 
   name = signal('');
-  isAdmin = signal(false);
+  selectedRoleId = signal<number | null>(null);
   isBlocked = signal(false);
   requirePasswordRules = signal(false);
   passwordValidTo = signal<string | null>(null);
 
-  constructor() {
+  async ngOnInit() {
     this.load();
   }
 
@@ -38,7 +42,7 @@ export class EditUserDialogComponent {
     try {
       const user = this.data.user;
       this.name.set(user.name ?? '');
-      this.isAdmin.set(user.isAdmin);
+      this.selectedRoleId.set(user.roleId ?? null);
       this.isBlocked.set(user.isBlocked);
       this.requirePasswordRules.set(user.requirePasswordRules);
       this.passwordValidTo.set(user.passwordValidTo ?? null);
@@ -53,7 +57,7 @@ export class EditUserDialogComponent {
     this.error.set(null);
     const dto = {
       name: this.name(),
-      isAdmin: this.isAdmin(),
+      roleId: this.selectedRoleId(),
       isBlocked: this.isBlocked(),
       requirePasswordRules: this.requirePasswordRules(),
       passwordValidTo: this.passwordValidTo() || null,

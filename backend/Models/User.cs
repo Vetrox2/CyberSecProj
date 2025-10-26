@@ -20,10 +20,10 @@ namespace backend.Models
 
         public bool IsBlocked { get; set; } = false;
 
-        public bool IsAdmin { get; set; } = false;
-
         public DateTime? PasswordValidTo { get; set; }
 
         public bool RequirePasswordRules { get; set; } = true;
+
+        public int RoleId { get; set; }
     }
 }

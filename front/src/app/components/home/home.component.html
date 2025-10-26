@@ -17,7 +17,7 @@
       <button (click)="logout()">Wyloguj</button>
     </div>
 
-    <div class="admin-area" *ngIf="u.isAdmin">
+    <div class="admin-area" *ngIf="u.roleId === 3">
       <h2>Panel administracyjny</h2>
       <app-admin-panel></app-admin-panel>
     </div>

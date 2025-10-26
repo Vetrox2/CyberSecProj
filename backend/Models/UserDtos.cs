@@ -9,9 +9,9 @@ namespace backend.Models
         public string Name { get; set; }
         public bool MustChangePassword { get; set; }
         public bool IsBlocked { get; set; }
-        public bool IsAdmin { get; set; }
         public DateTime? PasswordValidTo { get; set; }
         public bool RequirePasswordRules { get; set; }
+        public int RoleId { get; set; }
     }
 
     public class CreateUserDto
@@ -26,7 +26,7 @@ namespace backend.Models
         [MaxLength(200)]
         public string Name { get; set; }
 
-        public bool IsAdmin { get; set; } = false;
+        public int? RoleId { get; set; }
         public bool RequirePasswordRules { get; set; } = false;
         public DateTime? PasswordValidTo { get; set; }
     }
@@ -38,7 +38,7 @@ namespace backend.Models
 
         public bool? IsBlocked { get; set; }
 
-        public bool? IsAdmin { get; set; }
+        public int? RoleId { get; set; }
 
         public bool? RequirePasswordRules { get; set; }
 

@@ -27,14 +27,16 @@
   </div>
 
   <div class="form-row">
-    <label
-      ><input
-        type="checkbox"
-        [ngModel]="isAdmin()"
-        (ngModelChange)="isAdmin.set($event)"
-      />
-      Admin</label
+    <label>Rola</label>
+    <select
+      [ngModel]="selectedRoleId()"
+      (ngModelChange)="selectedRoleId.set($event ? +$event : null)"
     >
+      <option [value]="null">-- Brak roli --</option>
+      <option *ngFor="let role of roles()" [value]="role.id">
+        {{ role.name }}
+      </option>
+    </select>
   </div>
 
   <div class="form-row">

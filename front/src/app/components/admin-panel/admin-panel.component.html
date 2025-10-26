@@ -69,7 +69,7 @@
       <tr>
         <th>Login</th>
         <th>Imię</th>
-        <th>Admin</th>
+        <th>Rola</th>
         <th>Zablokowany</th>
         <th>Wym. zasady</th>
         <th>Pass valid to</th>
@@ -80,7 +80,7 @@
       <tr *ngFor="let u of users()">
         <td>{{ u.login }}</td>
         <td>{{ u.name }}</td>
-        <td>{{ u.isAdmin ? "✔" : "" }}</td>
+        <td>{{ getRoleName(u.roleId) }}</td>
         <td>
           <button (click)="toggleBlock(u)">
             {{ u.isBlocked ? "Odblokuj" : "Zablokuj" }}

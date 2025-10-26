@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { UserService } from '../../services/user.service';
-import { firstValueFrom, range } from 'rxjs';
+import { RoleService } from '../../services/role.service';
 
 @Component({
   selector: 'app-create-user-dialog',
@@ -14,13 +14,16 @@ import { firstValueFrom, range } from 'rxjs';
 })
 export class CreateUserDialogComponent {
   private userService = inject(UserService);
+  private roleService = inject(RoleService);
   private dialogRef = inject(MatDialogRef<CreateUserDialogComponent>);
+
+  roles = this.roleService.roles();
 
   login = signal('');
   otp = signal('');
   password = signal('');
   name = signal('');
-  isAdmin = signal(false);
+  selectedRoleId = signal<number | null>(null);
   requirePasswordRules = signal(false);
   passwordValidTo = signal<string | null>(null);
   loading = signal(false);
@@ -42,7 +45,7 @@ export class CreateUserDialogComponent {
         login: this.login(),
         password: this.password(),
         name: this.name() || undefined,
-        isAdmin: this.isAdmin(),
+        roleId: this.selectedRoleId() || undefined,
         requirePasswordRules: this.requirePasswordRules(),
         passwordValidTo: this.passwordValidTo() || undefined,
       });

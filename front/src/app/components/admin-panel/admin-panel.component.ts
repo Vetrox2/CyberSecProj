@@ -16,6 +16,7 @@ import { UpdateUserDto, UserDto } from '../../models/user.model';
 import { CreateUserDialogComponent } from '../create-user-dialog/create-user-dialog.component';
 import { SetPasswordDialogComponent } from '../set-password-dialog/set-password-dialog.component';
 import { ViewLogsDialogComponent } from '../view-logs-dialog/view-logs-dialog.component';
+import { RoleService } from '../../services/role.service';
 
 @Component({
   selector: 'app-admin-panel',
@@ -28,8 +29,10 @@ export class AdminPanelComponent implements OnInit {
   private userService = inject(UserService);
   private settingsService = inject(SettingsService);
   private dialog = inject(MatDialog);
+  private roleService = inject(RoleService);
 
   users = this.userService.users;
+  roles = this.roleService.roles();
   loading = signal(false);
 
   currentSettings = this.settingsService.settings();
@@ -112,6 +115,10 @@ export class AdminPanelComponent implements OnInit {
   async deleteUser(u: UserDto) {
     if (!confirm(`Usuń użytkownika ${u.login}?`)) return;
     await this.userService.delete(u.id);
+  }
+
+  getRoleName(roleId: number) {
+    return this.roles().find((r) => r.id === roleId)?.name;
   }
 
   // Settings

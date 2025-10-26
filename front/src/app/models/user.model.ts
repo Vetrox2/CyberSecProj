@@ -4,7 +4,7 @@ export interface UserDto {
   name?: string | null;
   mustChangePassword: boolean;
   isBlocked: boolean;
-  isAdmin: boolean;
+  roleId: number;
   passwordValidTo?: string | null;
   requirePasswordRules: boolean;
 }
@@ -13,7 +13,7 @@ export interface CreateUserDto {
   login: string;
   password: string;
   name?: string | null;
-  isAdmin?: boolean;
+  roleId?: number;
   requirePasswordRules?: boolean;
   passwordValidTo?: string | null;
 }
@@ -21,7 +21,7 @@ export interface CreateUserDto {
 export interface UpdateUserDto {
   name?: string | null;
   isBlocked?: boolean | null;
-  isAdmin?: boolean | null;
+  roleId?: number | null;
   requirePasswordRules?: boolean | null;
   passwordValidTo?: string | null;
 }
