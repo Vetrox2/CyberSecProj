@@ -56,6 +56,7 @@ namespace backend.Filters
             return controllerName switch
             {
                 "Users" => AuditActionTypeMappers.UsersControllerActionMapper(httpMethod, actionName ?? ""),
+                "Settings" => AuditActionTypeMappers.SettingsControllerActionMapper(httpMethod, actionName ?? ""),
                 _ => null
             };
         }
@@ -101,6 +102,14 @@ namespace backend.Filters
                 ("POST", "SetPasswordByUser") => AuditActionType.UserPasswordSetByUser,
                 ("POST", "Login") => AuditActionType.UserLogin,
                 ("POST", "GenerateOneTimePassword") => AuditActionType.GenerateOneTimePassword,
+                _ => null
+            };
+
+        public static string? SettingsControllerActionMapper(string httpMethod, string actionName)
+            => (httpMethod, actionName) switch
+            {
+                ("GET", "GetSettings") => AuditActionType.SettingsGet,
+                ("PUT", "UpdateSettings") => AuditActionType.SettingsUpdate,
                 _ => null
             };
     }

@@ -37,5 +37,9 @@ namespace backend.Models
         // User Queries
         public const string UserGetAll = "All Users Retrieved";
         public const string UserGetById = "User Details Retrieved";
+
+        // Settings Operations
+        public const string SettingsGet = "Settings Retrieved";
+        public const string SettingsUpdate = "Settings Updated";
     }
 }

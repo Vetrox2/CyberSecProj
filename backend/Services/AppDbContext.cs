@@ -13,6 +13,7 @@ namespace backend.Services
         public DbSet<User> Users { get; set; }
         public DbSet<AuditLog> AuditLogs { get; set; }
         public DbSet<OneTimePassword> OneTimePasswords { get; set; }
+        public DbSet<AppSettings> AppSettings { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -45,6 +46,11 @@ namespace backend.Services
 
             builder.Entity<OneTimePassword>()
                 .HasIndex(otp => new { otp.UserLogin, otp.Active });
+
+            builder.Entity<AppSettings>().HasData(new AppSettings
+            {
+                Id = 1,
+            });
         }
     }
 }

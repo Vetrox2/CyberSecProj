@@ -6,11 +6,13 @@ namespace backend.Filters
 {
     public class AuthenticationFilter : IAsyncActionFilter
     {
+        static readonly string[] ActionsWithoutAuth = ["Login", "GetSettings"];
+
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
             var actionName = context.RouteData.Values["action"]?.ToString();
 
-            if (actionName == "Login")
+            if (ActionsWithoutAuth.Contains(actionName))
             {
                 await next();
                 return;

@@ -4,6 +4,64 @@
     <button (click)="openLogs()">Zobacz logi</button>
   </div>
 
+  <!-- Settings Section -->
+  <div class="settings-section">
+    <h2>Ustawienia aplikacji</h2>
+
+    <div class="setting-row">
+      <label>Czas sesji (minuty):</label>
+      <div class="counter">
+        <button
+          (click)="decrementSessionTimeout()"
+          [disabled]="sessionTimeout() <= 1"
+        >
+          -
+        </button>
+        <span class="counter-value">{{ sessionTimeout() }}</span>
+        <button (click)="incrementSessionTimeout()">+</button>
+      </div>
+    </div>
+
+    <div class="setting-row">
+      <label>Max błędnych logowań:</label>
+      <div class="counter">
+        <button
+          (click)="decrementMaxFailedAttempts()"
+          [disabled]="maxFailedAttempts() <= 1"
+        >
+          -
+        </button>
+        <span class="counter-value">{{ maxFailedAttempts() }}</span>
+        <button (click)="incrementMaxFailedAttempts()">+</button>
+      </div>
+    </div>
+
+    <div class="setting-row">
+      <label>Czas blokady (minuty):</label>
+      <div class="counter">
+        <button
+          (click)="decrementLockoutDuration()"
+          [disabled]="lockoutDuration() <= 1"
+        >
+          -
+        </button>
+        <span class="counter-value">{{ lockoutDuration() }}</span>
+        <button (click)="incrementLockoutDuration()">+</button>
+      </div>
+    </div>
+
+    <div class="settings-actions">
+      <button
+        class="save-button"
+        (click)="saveSettings()"
+        [disabled]="!settingsChanged()"
+        [class.active]="settingsChanged()"
+      >
+        {{ settingsChanged() ? "Zapisz zmiany" : "Brak zmian" }}
+      </button>
+    </div>
+  </div>
+
   <div *ngIf="loading()">Ładowanie...</div>
 
   <table class="users-table" *ngIf="users().length > 0">
