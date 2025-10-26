@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace backend.Filters
 {
-    public class AuditActionFilter(IAuditLogService auditLogService) : IAsyncActionFilter
+    public class AuditActionFilter(IAuditLogService auditLogService, IUserService userService) : IAsyncActionFilter
     {
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
@@ -16,11 +16,35 @@ namespace backend.Filters
                 return;
 
             var successState = IsSuccessStatusCode(executedContext);
-            var userId = ExtractUserId(context, executedContext);
+            var userId = await ExtractUserId(context, executedContext);
             if (userId == null)
                 return;
 
             await auditLogService.LogAsync(userId.Value, actionType, successState);
+        }
+
+        private async Task<Guid?> ExtractUserId(ActionExecutingContext context, ActionExecutedContext executedContext)
+        {
+            var actionName = context.RouteData.Values["action"]?.ToString();
+
+            if (actionName == "Login" && executedContext.Result is OkObjectResult okResult)
+            {
+                return okResult.Value is User u ? u.Id : null;
+            }
+
+            var userIdClaim = context.HttpContext.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+            if (userIdClaim != null)
+            {
+                return Guid.TryParse(userIdClaim.Value, out var userId) ? userId : null;
+            }
+
+            if (!(context.ActionArguments.TryGetValue("dto", out var dtoObj) && dtoObj is LoginDto loginDto))
+            {
+                return null;
+            }
+
+            var user = await userService.GetByLoginAsync(loginDto.Login);
+            return user?.Id;
         }
 
         private static string? GetActionType(ActionExecutingContext context)
@@ -59,21 +83,6 @@ namespace backend.Filters
 
             var statusCode = context.HttpContext.Response.StatusCode;
             return statusCode >= 200 && statusCode < 300;
-        }
-
-        private static Guid? ExtractUserId(ActionExecutingContext context, ActionExecutedContext executedContext)
-        {
-            var actionName = context.RouteData.Values["action"]?.ToString();
-
-            if (actionName == "Login" && executedContext.Result is OkObjectResult okResult)
-            {
-                return okResult.Value is User user ? user.Id : null;
-            }
-
-            var userIdClaim = context.HttpContext.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
-            return userIdClaim != null && Guid.TryParse(userIdClaim.Value, out var userId)
-                ? userId
-                : null;
         }
     }
 
