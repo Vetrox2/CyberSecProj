@@ -108,5 +108,11 @@ namespace backend.Controllers
                 return NotFound(new { message = ex.Message });
             }
         }
+
+        [HttpPost("recaptcha/{token}")]
+        public async Task<IActionResult> VerifyRecaptcha([FromRoute] string token)
+        {
+            return Ok(await userService.VerifyRecaptchaAsync(token));
+        }
     }
 }

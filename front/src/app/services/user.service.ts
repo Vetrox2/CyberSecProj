@@ -103,4 +103,11 @@ export class UserService {
       this.http.post<number>(`${this.baseUrl}/otp/${userLogin}`, {})
     );
   }
+
+  async verifyRecaptcha(token: string): Promise<boolean> {
+    const response = await firstValueFrom(
+      this.http.post<boolean>(`${this.baseUrl}/recaptcha/${token}`, {})
+    );
+    return response;
+  }
 }

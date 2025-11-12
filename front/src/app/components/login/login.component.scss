@@ -37,6 +37,12 @@
     }
   }
 
+  re-captcha {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 8px;
+  }
+
   button {
     width: 100%;
     padding: 0.7rem;

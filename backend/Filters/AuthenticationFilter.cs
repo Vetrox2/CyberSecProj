@@ -6,7 +6,7 @@ namespace backend.Filters
 {
     public class AuthenticationFilter : IAsyncActionFilter
     {
-        static readonly string[] ActionsWithoutAuth = ["Login", "GetSettings"];
+        static readonly string[] ActionsWithoutAuth = ["Login", "GetSettings", "VerifyRecaptcha"];
 
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {

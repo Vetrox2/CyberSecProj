@@ -1,12 +1,14 @@
 ﻿using backend.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 
 namespace backend.Services
 {
-    public class UserService(AppDbContext db, IOneTimePasswordService otpService) : IUserService
+    public class UserService(AppDbContext db, IOneTimePasswordService otpService, IConfiguration settings) : IUserService
     {
         private readonly PasswordHasher<User> passwordHasher = new();
+        private readonly string recaptchaSecret = settings.GetValue<string>("RecaptchaSecret") ?? "";
 
         public async Task<IEnumerable<User>> GetAllAsync()
         {
@@ -125,6 +127,38 @@ namespace backend.Services
             }
 
             return null;
+        }
+
+        public async Task<bool> VerifyRecaptchaAsync(string token)
+        {
+            if (string.IsNullOrWhiteSpace(token))
+                return false;
+
+            var http = new HttpClient();
+            var content = new FormUrlEncodedContent(
+            [
+                new KeyValuePair<string, string>("secret", recaptchaSecret),
+                new KeyValuePair<string, string>("response", token)
+            ]);
+
+            HttpResponseMessage resp;
+            try
+            {
+                resp = await http.PostAsync("https://www.google.com/recaptcha/api/siteverify", content);
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+
+            if (!resp.IsSuccessStatusCode)
+                return false;
+
+            var json = await resp.Content.ReadAsStringAsync();
+            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+            var parsed = JsonSerializer.Deserialize<RecaptchaResponse>(json, options);
+
+            return parsed is not null && parsed.Success;
         }
 
         private static bool IsNewPasswordValid(User user, string password)

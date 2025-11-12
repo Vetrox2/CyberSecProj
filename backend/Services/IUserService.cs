@@ -16,5 +16,6 @@ namespace backend.Services
         /// </summary>
         Task<bool> SetNewPasswordAsync(Guid id, string newPassword, bool requiresExpiredPassword = true);
         Task<User?> Login(LoginDto dto);
+        Task<bool> VerifyRecaptchaAsync(string token);
     }
 }
