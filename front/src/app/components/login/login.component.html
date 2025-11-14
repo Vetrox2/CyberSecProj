@@ -23,7 +23,7 @@
     />
   </div>
 
-  <re-captcha (resolved)="onCaptchaResolved($event)" [siteKey]="captchaKey"></re-captcha>
+  <app-image-captcha (captchaResolved)="onCaptchaResolved($event)"></app-image-captcha>
 
   @if(changeButtonEnabled()){
   <button (click)="onLogin()">Zaloguj</button>

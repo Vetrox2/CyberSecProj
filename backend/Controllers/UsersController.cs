@@ -114,5 +114,19 @@ namespace backend.Controllers
         {
             return Ok(await userService.VerifyRecaptchaAsync(token));
         }
+
+        [HttpGet("image-captcha")]
+        public async Task<IActionResult> GetImageCaptcha()
+        {
+            var captcha = await userService.GenerateImageCaptchaAsync();
+            return Ok(captcha);
+        }
+
+        [HttpPost("verify-image-captcha")]
+        public IActionResult VerifyImageCaptcha([FromBody] VerifyCaptchaDto dto)
+        {
+            var isValid = userService.VerifyImageCaptcha(dto);
+            return Ok(isValid);
+        }
     }
 }

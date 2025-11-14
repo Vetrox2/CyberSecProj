@@ -5,12 +5,12 @@ import { FormsModule } from '@angular/forms';
 import { UserService } from '../../services/user.service';
 import { UserDto } from '../../models/user.model';
 import { LoginLockoutService } from '../../services/login-lockout.service';
-import { RecaptchaModule } from 'ng-recaptcha';
+import { ImageCaptchaComponent } from '../image-captcha/image-captcha.component';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, RecaptchaModule],
+  imports: [CommonModule, FormsModule, ImageCaptchaComponent],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })
@@ -19,8 +19,6 @@ export class LoginComponent implements OnInit {
   password = signal('');
   error = signal('');
   changeButtonEnabled = signal(false);
-
-  readonly captchaKey = '6LeJQQosAAAAAPm6xMxy4lCGFXa8bRvbDk5UCaSz';
 
   lockoutService = inject(LoginLockoutService);
   private usersService = inject(UserService);
@@ -74,13 +72,7 @@ export class LoginComponent implements OnInit {
     return expiry.getTime() < now.getTime();
   }
 
-  async onCaptchaResolved(captchaResponse: string | null) {
-    if (!captchaResponse) {
-      this.changeButtonEnabled.set(false);
-      return;
-    }
-
-    const isValid = await this.usersService.verifyRecaptcha(captchaResponse);
+  onCaptchaResolved(isValid: boolean) {
     this.changeButtonEnabled.set(isValid);
   }
 

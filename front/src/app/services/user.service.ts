@@ -9,6 +9,7 @@ import {
   SetNewPasswordDto,
   LoginDto,
 } from '../models/user.model';
+import { ImageCaptchaDto, VerifyCaptchaDto } from '../models/captcha.model';
 import { Router } from '@angular/router';
 
 @Injectable({
@@ -109,5 +110,18 @@ export class UserService {
       this.http.post<boolean>(`${this.baseUrl}/recaptcha/${token}`, {})
     );
     return response;
+  }
+
+  async getImageCaptcha(): Promise<ImageCaptchaDto> {
+    return await firstValueFrom(
+      this.http.get<ImageCaptchaDto>(`${this.baseUrl}/image-captcha`)
+    );
+  }
+
+  async verifyImageCaptcha(dto: VerifyCaptchaDto): Promise<boolean> {
+    const result = await firstValueFrom(
+      this.http.post<boolean>(`${this.baseUrl}/verify-image-captcha`, dto)
+    );
+    return result;
   }
 }

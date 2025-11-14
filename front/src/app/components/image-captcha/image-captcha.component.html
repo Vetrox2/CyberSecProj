@@ -1,0 +1,43 @@
+<div class="image-captcha-container">
+  @if (captchaData()) {
+    <div class="captcha-challenge">
+      <h3>{{ captchaData()!.challenge }}</h3>
+      <button class="refresh-btn" (click)="refresh()" [disabled]="isVerifying()">
+        ⟳ Refresh
+      </button>
+    </div>
+
+    <div class="captcha-grid">
+      @for (image of captchaData()!.images; track image.index) {
+        <div 
+          class="captcha-image" 
+          [class.selected]="isImageSelected(image.index)"
+          (click)="toggleImageSelection(image.index)"
+        >
+          <img [src]="image.base64Data" [alt]="'Image ' + image.index" />
+          @if (isImageSelected(image.index)) {
+            <div class="selection-overlay">
+              <span class="checkmark">✓</span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="captcha-actions">
+      <button 
+        class="verify-btn" 
+        (click)="verifyCaptcha()" 
+        [disabled]="selectedIndices().size === 0 || isVerifying()"
+      >
+        {{ isVerifying() ? 'Verifying...' : 'Verify' }}
+      </button>
+    </div>
+
+    @if (errorMessage()) {
+      <p class="error-message">{{ errorMessage() }}</p>
+    }
+  } @else {
+    <div class="loading">Loading captcha...</div>
+  }
+</div>

@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace backend.Services
 {
@@ -146,7 +148,7 @@ namespace backend.Services
             {
                 resp = await http.PostAsync("https://www.google.com/recaptcha/api/siteverify", content);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }
@@ -159,6 +161,84 @@ namespace backend.Services
             var parsed = JsonSerializer.Deserialize<RecaptchaResponse>(json, options);
 
             return parsed is not null && parsed.Success;
+        }
+
+        public async Task<ImageCaptchaDto> GenerateImageCaptchaAsync()
+        {
+            List<string> categories = ["car", "bike", "building"];
+            var random = new Random();
+            var selectedCategory = categories[random.Next(categories.Count)];
+
+            var assetsPath = Path.Combine(Directory.GetCurrentDirectory(), "assets", "captcha");
+            var allFiles = Directory.GetFiles(assetsPath, "*.png");
+
+            var correctImages = allFiles
+                .Where(f => Path.GetFileNameWithoutExtension(f).StartsWith(selectedCategory, StringComparison.OrdinalIgnoreCase))
+                .OrderBy(_ => random.Next())
+                .Take(3)
+                .ToList();
+
+            var incorrectImages = allFiles
+                .Where(f => !Path.GetFileNameWithoutExtension(f).StartsWith(selectedCategory, StringComparison.OrdinalIgnoreCase))
+                .OrderBy(_ => random.Next())
+                .Take(6)
+                .ToList();
+
+            var allImages = correctImages.Concat(incorrectImages).OrderBy(_ => random.Next()).ToList();
+
+            var imageDtos = new List<ImageDto>();
+            for (int i = 0; i < allImages.Count; i++)
+            {
+                var imageBytes = await File.ReadAllBytesAsync(allImages[i]);
+                var base64 = Convert.ToBase64String(imageBytes);
+                imageDtos.Add(new ImageDto
+                {
+                    Index = i,
+                    Base64Data = $"data:image/png;base64,{base64}"
+                });
+            }
+
+            var correctIndices = new List<int>();
+            for (int i = 0; i < allImages.Count; i++)
+            {
+                var fileName = Path.GetFileNameWithoutExtension(allImages[i]);
+                if (fileName.StartsWith(selectedCategory, StringComparison.OrdinalIgnoreCase))
+                {
+                    correctIndices.Add(i);
+                }
+            }
+
+            var encryptedKey = GenerateCaptchaHash(correctIndices);
+
+            var challengeMessage = selectedCategory switch
+            {
+                "car" => "Select all cars",
+                "bike" => "Select all bikes",
+                "tree" => "Select all trees",
+                "building" => "Select all buildings",
+                _ => "Select matching images"
+            };
+
+            return new ImageCaptchaDto
+            {
+                Images = imageDtos,
+                Challenge = challengeMessage,
+                EncryptedKey = encryptedKey
+            };
+        }
+
+        public bool VerifyImageCaptcha(VerifyCaptchaDto dto)
+        {
+            var userHash = GenerateCaptchaHash(dto.SelectedIndices);
+            return userHash == dto.EncryptedKey;
+        }
+
+        private static string GenerateCaptchaHash(List<int> indices)
+        {
+            var sortedIndices = string.Join(",", indices.OrderBy(x => x));
+            var bytes = Encoding.UTF8.GetBytes(sortedIndices);
+            var hash = SHA256.HashData(bytes);
+            return Convert.ToBase64String(hash);
         }
 
         private static bool IsNewPasswordValid(User user, string password)
