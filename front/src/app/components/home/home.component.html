@@ -14,7 +14,28 @@
 
     <div class="actions">
       <button (click)="openChangePassword()">Change Password</button>
+      <button (click)="onEditFile()">Edytuj plik</button>
       <button (click)="logout()">Wyloguj</button>
+    </div>
+
+    <div class="unlock-section">
+      <h3>Aktywacja dostępu do akcji</h3>
+
+      <div class="unlock-form">
+        <label for="unlockKey">Wprowadź klucz odblokowujący:</label>
+        <div class="input-group">
+          <input
+            id="unlockKey"
+            type="text"
+            [(ngModel)]="unlockKeyInput"
+            placeholder="Wpisz zaszyfrowany klucz"
+          />
+          <button (click)="validateUnlockKey()" class="validate-btn">
+            Aktywuj dostęp
+          </button>
+        </div>
+        <p class="hint">Klucz możesz otrzymać od administratora</p>
+      </div>
     </div>
 
     <div class="admin-area" *ngIf="u.roleId === 3">

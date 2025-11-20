@@ -104,6 +104,9 @@
           <button (click)="openEdit(u)">Edytuj</button>
           <button (click)="openSetPassword(u.id)">Ustaw hasło</button>
           <button (click)="generateOtp(u.login)">Generuj OTP</button>
+          <button (click)="generateUnlockKey(u.id, u.login)">
+            Generuj klucz
+          </button>
           <button (click)="deleteUser(u)">Usuń</button>
           <button (click)="openLogs(u.id)">Logi</button>
         </td>

@@ -1,7 +1,9 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserService } from '../../services/user.service';
 import { ChangePasswordDialogComponent } from '../change-password-dialog/change-password-dialog.component';
 import { AdminPanelComponent } from '../admin-panel/admin-panel.component';
@@ -10,7 +12,7 @@ import { RoleService } from '../../services/role.service';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, MatDialogModule, AdminPanelComponent],
+  imports: [CommonModule, FormsModule, MatDialogModule, AdminPanelComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
 })
@@ -19,6 +21,7 @@ export class HomeComponent implements OnInit {
   private router = inject(Router);
   private dialog = inject(MatDialog);
   private roleService = inject(RoleService);
+  private snackBar = inject(MatSnackBar);
 
   // currentUser comes from service computed, but for now you said you'll supply it;
   // we will read from service.currentUser computed.
@@ -26,6 +29,7 @@ export class HomeComponent implements OnInit {
 
   // helper local signal for loading state
   loading = signal(false);
+  unlockKeyInput = signal<string>('');
 
   async ngOnInit() {
     await this.roleService.loadAll();
@@ -54,5 +58,52 @@ export class HomeComponent implements OnInit {
       // (this.usersService as any)._currentUser?.set(null);
     }
     this.router.navigateByUrl('/'); // or to login route
+  }
+
+  async onEditFile() {
+    const canEdit = await this.userService.performFileEdit();
+
+    if (canEdit) {
+      this.snackBar.open('Edytowanie pliku...', 'Zamknij', {
+        duration: 3000,
+        panelClass: ['success-snackbar'],
+      });
+    } else {
+      this.snackBar.open('Ta akcja jest zablokowana', 'Zamknij', {
+        duration: 3000,
+        panelClass: ['error-snackbar'],
+      });
+    }
+  }
+
+  async validateUnlockKey() {
+    if (!this.unlockKeyInput()) {
+      this.snackBar.open('Wprowadź klucz odblokowujący', 'Zamknij', {
+        duration: 3000,
+        panelClass: ['error-snackbar'],
+      });
+      return;
+    }
+
+    const result = await this.userService.validateUnlockKey(
+      this.unlockKeyInput()
+    );
+
+    if (result.success) {
+      this.snackBar.open(
+        result.message || 'Klucz poprawny - dostęp aktywowany',
+        'Zamknij',
+        {
+          duration: 5000,
+          panelClass: ['success-snackbar'],
+        }
+      );
+      this.unlockKeyInput.set('');
+    } else {
+      this.snackBar.open(result.message || 'Nieprawidłowy klucz', 'Zamknij', {
+        duration: 3000,
+        panelClass: ['error-snackbar'],
+      });
+    }
   }
 }

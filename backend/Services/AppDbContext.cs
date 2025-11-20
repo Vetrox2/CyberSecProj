@@ -15,6 +15,7 @@ namespace backend.Services
         public DbSet<OneTimePassword> OneTimePasswords { get; set; }
         public DbSet<AppSettings> AppSettings { get; set; }
         public DbSet<Role> Roles { get; set; }
+        public DbSet<Models.Action> Actions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -51,6 +52,15 @@ namespace backend.Services
             builder.Entity<Role>()
                 .HasIndex(r => r.Name)
                 .IsUnique();
+
+            builder.Entity<Models.Action>()
+                .HasIndex(a => a.UserId);
+
+            builder.Entity<Models.Action>()
+                .HasOne(a => a.User)
+                .WithMany()
+                .HasForeignKey(a => a.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<Role>().HasData(
                 new Role { Id = 1, Name = "User" },

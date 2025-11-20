@@ -17,6 +17,7 @@ import { Router } from '@angular/router';
 })
 export class UserService {
   private readonly baseUrl = 'https://localhost:7001/api/Users';
+  private readonly actionsBaseUrl = 'https://localhost:7001/api/Actions';
 
   private _users = signal<UserDto[]>([]);
   private _currentUser = signal<UserDto | null>(null);
@@ -123,5 +124,49 @@ export class UserService {
       this.http.post<boolean>(`${this.baseUrl}/verify-image-captcha`, dto)
     );
     return result;
+  }
+
+  async performFileEdit(): Promise<boolean> {
+    try {
+      const result = await firstValueFrom(
+        this.http.get<boolean>(`${this.actionsBaseUrl}/perform-file-edit`)
+      );
+      return result;
+    } catch (error) {
+      console.error('Failed to perform file edit:', error);
+      return false;
+    }
+  }
+
+  async generateUnlockKey(userId: string): Promise<string> {
+    try {
+      const result = await firstValueFrom(
+        this.http.post<{ encryptedKey: string }>(
+          `${this.actionsBaseUrl}/generate-unlock-key`,
+          { userId }
+        )
+      );
+      return result.encryptedKey;
+    } catch (error) {
+      console.error('Failed to generate unlock key:', error);
+      throw error;
+    }
+  }
+
+  async validateUnlockKey(
+    encryptedKey: string
+  ): Promise<{ success: boolean; message?: string }> {
+    try {
+      const result = await firstValueFrom(
+        this.http.post<{ success: boolean; message?: string }>(
+          `${this.actionsBaseUrl}/validate-unlock-key`,
+          { encryptedKey }
+        )
+      );
+      return result;
+    } catch (error) {
+      console.error('Failed to validate unlock key:', error);
+      return { success: false, message: 'Błąd walidacji klucza' };
+    }
   }
 }

@@ -9,6 +9,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserService } from '../../services/user.service';
 import { SettingsService } from '../../services/settings.service';
 import { EditUserDialogComponent } from '../edit-user-dialog/edit-user-dialog.component';
@@ -30,6 +31,7 @@ export class AdminPanelComponent implements OnInit {
   private settingsService = inject(SettingsService);
   private dialog = inject(MatDialog);
   private roleService = inject(RoleService);
+  private snackBar = inject(MatSnackBar);
 
   users = this.userService.users;
   roles = this.roleService.roles();
@@ -93,6 +95,28 @@ export class AdminPanelComponent implements OnInit {
   async generateOtp(userLogin: string) {
     const otp = await this.userService.generateOneTimePassword(userLogin);
     alert(`Wygenerowane OTP dla ${userLogin}: ${otp}`);
+  }
+
+  async generateUnlockKey(userId: string, userLogin: string) {
+    try {
+      const key = await this.userService.generateUnlockKey(userId);
+
+      await navigator.clipboard.writeText(key);
+
+      this.snackBar.open(
+        `Klucz dla ${userLogin} wygenerowany i skopiowany: ${key}`,
+        'Zamknij',
+        {
+          duration: 10000,
+          panelClass: ['success-snackbar'],
+        }
+      );
+    } catch (error) {
+      this.snackBar.open('Błąd generowania klucza', 'Zamknij', {
+        duration: 3000,
+        panelClass: ['error-snackbar'],
+      });
+    }
   }
 
   async toggleBlock(u: UserDto) {
